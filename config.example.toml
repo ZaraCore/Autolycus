@@ -1,0 +1,40 @@
+[site]
+id = "primary"
+name = "我的 New API 站点"
+base_url = "https://your-new-api.example.com"
+# Configure ONLY after confirming your modified backend's aggregate endpoint.
+metrics_path = "/replace-with-confirmed-metrics-endpoint"
+source = "production_calls"
+# Change this whenever the success definition or filters change.
+scope = "all-channels-v1"
+timeout_seconds = 20
+
+[query]
+start_parameter = "start_timestamp"
+end_parameter = "end_timestamp"
+# Boundary convention: start inclusive, end exclusive. Confirm backend matches.
+
+[query.filters]
+# group = "OpenAI"
+
+[fields]
+# Dot paths in the JSON response. These are examples, NOT verified New API fields.
+total = "data.total"
+success = "data.success_count"
+failure = "data.failure_count"
+# Optional fields: omit until their definition and units are confirmed.
+# p50_seconds = "data.p50_seconds"
+# p95_seconds = "data.p95_seconds"
+# latency_samples = "data.latency_samples"
+
+[rules]
+min_requests = 100
+success_rate_min = 0.70
+max_drop_points = 10.0
+history_days = 7
+
+[storage]
+path = "data/autolycus.db"
+
+[notification]
+enabled = false

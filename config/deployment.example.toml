@@ -1,0 +1,41 @@
+[site]
+id = "primary"
+name = "Example service"
+base_url = "https://backend.example.com"
+metrics_path = "/api/metrics/query"
+source = "platform_performance"
+scope = "all-default-filters-custom-interval-v2"
+timeout_seconds = 20
+[query]
+mode = "absolute"
+start_parameter = "start"
+end_parameter = "end"
+[query.filters]
+range = "custom"
+[fields]
+total = "data.total"
+success = "data.success"
+failure = "data.failure"
+p50_seconds = "data.quantiles.p50"
+p95_seconds = "data.quantiles.p95"
+latency_samples = "data.duration_count"
+[rules]
+min_requests = 100
+success_rate_min = 0.70
+max_drop_points = 10.0
+history_days = 7
+[storage]
+path = "/var/lib/autolycus/autolycus.db"
+[notification]
+enabled = true
+[channel_monitor]
+enabled = true
+path = "/channel_monitor"
+[model_performance]
+enabled = false
+# Add [[model_performance.targets]] with group/model, then enable.
+[schedule]
+weekday_times = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+weekend_times = ["09:00", "12:00", "18:00"]
+interval_mode = "planned_chain"
+grace_minutes = 10

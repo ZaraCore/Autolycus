@@ -1,0 +1,21 @@
+.env
+.env.*
+!.env.example
+config.synlink.toml
+config/local*.toml
+.deploy/
+.releases/
+backups/
+docs/local/
+tests/fixtures/local/
+.venv/
+config.toml
+data/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Retained local legacy Windows management script
+scripts/manage-task.ps1

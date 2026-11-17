@@ -1,0 +1,231 @@
+{
+  "success": true,
+  "data": {
+    "dimension": "group",
+    "window_sec": 300,
+    "start_ts": 1794798000,
+    "end_ts": 1794801600,
+    "rows": [
+      {
+        "key": "1000",
+        "name": "Example group 1",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 100,
+            "error": 0
+          }
+        ]
+      },
+      {
+        "key": "387",
+        "name": "Example group 2",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 101,
+            "error": 1
+          }
+        ]
+      },
+      {
+        "key": "1002",
+        "name": "Example group 3",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 102,
+            "error": 2
+          }
+        ]
+      },
+      {
+        "key": "1003",
+        "name": "Example group 4",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 103,
+            "error": 3
+          }
+        ]
+      },
+      {
+        "key": "1004",
+        "name": "Example group 5",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 104,
+            "error": 4
+          }
+        ]
+      },
+      {
+        "key": "1005",
+        "name": "Example group 6",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 105,
+            "error": 5
+          }
+        ]
+      },
+      {
+        "key": "1006",
+        "name": "Example group 7",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 106,
+            "error": 6
+          }
+        ]
+      },
+      {
+        "key": "1007",
+        "name": "Example group 8",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 107,
+            "error": 7
+          }
+        ]
+      },
+      {
+        "key": "1008",
+        "name": "Example group 9",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 108,
+            "error": 8
+          }
+        ]
+      },
+      {
+        "key": "1009",
+        "name": "Example group 10",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 109,
+            "error": 9
+          }
+        ]
+      },
+      {
+        "key": "1010",
+        "name": "Example group 11",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 110,
+            "error": 10
+          }
+        ]
+      },
+      {
+        "key": "1011",
+        "name": "Example group 12",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 111,
+            "error": 11
+          }
+        ]
+      },
+      {
+        "key": "1012",
+        "name": "Example group 13",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 112,
+            "error": 12
+          }
+        ]
+      },
+      {
+        "key": "1013",
+        "name": "Example group 14",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 113,
+            "error": 13
+          }
+        ]
+      },
+      {
+        "key": "1014",
+        "name": "Example group 15",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 114,
+            "error": 14
+          }
+        ]
+      },
+      {
+        "key": "1015",
+        "name": "Example group 16",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 115,
+            "error": 15
+          }
+        ]
+      },
+      {
+        "key": "1016",
+        "name": "Example group 17",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 116,
+            "error": 16
+          }
+        ]
+      },
+      {
+        "key": "1017",
+        "name": "Example group 18",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 117,
+            "error": 17
+          }
+        ]
+      },
+      {
+        "key": "1018",
+        "name": "Example group 19",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 118,
+            "error": 18
+          }
+        ]
+      },
+      {
+        "key": "1019",
+        "name": "Example group 20",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 119,
+            "error": 19
+          }
+        ]
+      }
+    ]
+  }
+}

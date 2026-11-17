@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "total": 100945,
+    "success": 47818,
+    "failure": 53127,
+    "error_rate": 0.5262964980930209,
+    "throughput": 28.040277777777778,
+    "avg_duration": 61.563312194614824,
+    "avg_frt": 13904.62926391383,
+    "duration_count": 76952,
+    "frt_count": 1114,
+    "quantiles": {
+      "p50": 31.72789210789211,
+      "p95": 201.21469090909073
+    },
+    "updated_at": 1794556225506
+  }
+}

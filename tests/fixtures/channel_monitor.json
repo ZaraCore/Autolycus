@@ -1,0 +1,583 @@
+{
+  "success": true,
+  "data": {
+    "dimension": "channel",
+    "window_sec": 300,
+    "start_ts": 1794798000,
+    "end_ts": 1794801600,
+    "rows": [
+      {
+        "key": "1000",
+        "name": "Example channel 1",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 100,
+            "error": 0
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "387",
+        "name": "Example channel 2",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 101,
+            "error": 1
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": [
+          {
+            "status_code": 400,
+            "count": 273
+          },
+          {
+            "status_code": 503,
+            "count": 157
+          },
+          {
+            "status_code": 500,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "key": "1002",
+        "name": "Example channel 3",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 102,
+            "error": 2
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1003",
+        "name": "Example channel 4",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 103,
+            "error": 3
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1004",
+        "name": "Example channel 5",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 104,
+            "error": 4
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1005",
+        "name": "Example channel 6",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 105,
+            "error": 5
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1006",
+        "name": "Example channel 7",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 106,
+            "error": 6
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1007",
+        "name": "Example channel 8",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 107,
+            "error": 7
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1008",
+        "name": "Example channel 9",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 108,
+            "error": 8
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1009",
+        "name": "Example channel 10",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 109,
+            "error": 9
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1010",
+        "name": "Example channel 11",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 110,
+            "error": 10
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1011",
+        "name": "Example channel 12",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 111,
+            "error": 11
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1012",
+        "name": "Example channel 13",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 112,
+            "error": 12
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1013",
+        "name": "Example channel 14",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 113,
+            "error": 13
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1014",
+        "name": "Example channel 15",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 114,
+            "error": 14
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1015",
+        "name": "Example channel 16",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 115,
+            "error": 15
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1016",
+        "name": "Example channel 17",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 116,
+            "error": 16
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1017",
+        "name": "Example channel 18",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 117,
+            "error": 17
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1018",
+        "name": "Example channel 19",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 118,
+            "error": 18
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1019",
+        "name": "Example channel 20",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 119,
+            "error": 19
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1020",
+        "name": "Example channel 21",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 120,
+            "error": 20
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1021",
+        "name": "Example channel 22",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 121,
+            "error": 21
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1022",
+        "name": "Example channel 23",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 122,
+            "error": 22
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1023",
+        "name": "Example channel 24",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 123,
+            "error": 23
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1024",
+        "name": "Example channel 25",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 124,
+            "error": 24
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1025",
+        "name": "Example channel 26",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 125,
+            "error": 25
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1026",
+        "name": "Example channel 27",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 126,
+            "error": 26
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1027",
+        "name": "Example channel 28",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 127,
+            "error": 27
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1028",
+        "name": "Example channel 29",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 128,
+            "error": 28
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1029",
+        "name": "Example channel 30",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 129,
+            "error": 29
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1030",
+        "name": "Example channel 31",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 130,
+            "error": 30
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1031",
+        "name": "Example channel 32",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 131,
+            "error": 31
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1032",
+        "name": "Example channel 33",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 132,
+            "error": 32
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1033",
+        "name": "Example channel 34",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 133,
+            "error": 33
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1034",
+        "name": "Example channel 35",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 134,
+            "error": 34
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1035",
+        "name": "Example channel 36",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 135,
+            "error": 35
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1036",
+        "name": "Example channel 37",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 136,
+            "error": 36
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1037",
+        "name": "Example channel 38",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 137,
+            "error": 37
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1038",
+        "name": "Example channel 39",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 138,
+            "error": 38
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1039",
+        "name": "Example channel 40",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 139,
+            "error": 39
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1040",
+        "name": "Example channel 41",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 140,
+            "error": 40
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1041",
+        "name": "Example channel 42",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 141,
+            "error": 41
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      },
+      {
+        "key": "1042",
+        "name": "Example channel 43",
+        "buckets": [
+          {
+            "bucket_start": 1794798000,
+            "consume": 142,
+            "error": 42
+          }
+        ],
+        "group": "example-group",
+        "error_distribution": []
+      }
+    ]
+  }
+}

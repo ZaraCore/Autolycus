@@ -1,0 +1,119 @@
+# Confirmed from the supplied browser request and response.
+# No credentials are stored in this file.
+[site]
+id = "test"
+name = "Example service"
+base_url = "https://backend.test"
+metrics_path = "/api/metrics/query"
+source = "platform_performance"
+scope = "all-default-filters-custom-interval-v2"
+timeout_seconds = 20
+
+[query]
+mode = "absolute"
+start_parameter = "start"
+end_parameter = "end"
+
+[query.filters]
+range = "custom"
+
+[fields]
+total = "data.total"
+success = "data.success"
+failure = "data.failure"
+p50_seconds = "data.quantiles.p50"
+p95_seconds = "data.quantiles.p95"
+latency_samples = "data.duration_count"
+
+[rules]
+min_requests = 100
+success_rate_min = 0.70
+max_drop_points = 10.0
+history_days = 7
+
+[storage]
+path = "test-data/history.db"
+
+[notification]
+enabled = true
+
+[channel_monitor]
+enabled = true
+path = "/channel_monitor"
+
+[model_performance]
+enabled = true
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.5-flare"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.5-sunburst"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.6-flare"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.6-sunburst"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.5-flare"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.5-sunburst"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.6-flare"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.6-sunburst"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-2.5-flash-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3-pro-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3.1-flash-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3-pro-image-preview"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3.1-flash-image-preview"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3.1-flash-lite-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-nano-banana-2.1"
+
+[schedule]
+weekday_times = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+weekend_times = ["09:00", "12:00", "18:00"]
+interval_mode = "planned_chain"
+grace_minutes = 10

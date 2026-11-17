@@ -1,0 +1,23 @@
+{
+  "data": {
+    "total": 3137,
+    "success": 3137,
+    "failure": 0,
+    "error_rate": 0,
+    "throughput": 0.8713888888888889,
+    "avg_duration": 41.8973541600255,
+    "avg_frt": null,
+    "duration_count": 3137,
+    "frt_count": 0,
+    "quantiles": {
+      "p50": 39.22050847457627,
+      "p75": 50.776947115384615,
+      "p90": 65.49835353535354,
+      "p95": 78.4608571428571,
+      "p99": 125.51955555555561
+    },
+    "frt_quantiles": {},
+    "updated_at": 1794802949144
+  },
+  "success": true
+}
