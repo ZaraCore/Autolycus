@@ -8,6 +8,7 @@
 - Windows新管理脚本PowerShell语法检查通过。
 - 五个Linux脚本由Windows Git Bash逐个执行bash -n，全部通过；没有实际执行部署。
 - Compose YAML已在本地解析，健康命令、服务和数据卷定义存在；尚未使用真实docker compose校验和构建。
-- Windows既有任务及其实际站点配置未改动，未创建新任务、未部署到Ubuntu、未初始化Git或推送GitHub。
+- Windows既有任务及其实际站点配置未改动，未创建新任务、未部署到Ubuntu虚拟机。
+- 已创建公开仓库 https://github.com/ZaraCore/Autolycus 并推送main；首次GitHub Actions自动检查已通过，包含Ubuntu22.04测试、Shell语法、Compose配置、Docker镜像构建与容器CLI冒烟。
 
-仍需Ubuntu或CI完成：Docker镜像构建，Compose实际启动，Linux文件权限与fcntl锁验证，真实接口与飞书验收，重启恢复，升级/回退和备份恢复测试。不得将这些待验收项表述为已经通过。
+仍需Ubuntu虚拟机完成：Compose服务实际启动、数据卷权限及运行锁验证、真实接口与飞书验收、重启恢复、升级/回退和备份恢复测试。CI构建成功不能替代这些现场验收。

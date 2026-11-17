@@ -10,4 +10,4 @@ config/deployment.example.toml为通用部署模板，.env.example为环境变�
 
 GitHub Actions在Ubuntu22.04跑Python测试、bash语法检查、Compose配置检查及镜像构建/CLI冒烟。CI不是服务器真实鉴权/飞书投递验收，不使用部署密钥。Windows本地已用Git Bash通过五个Linux脚本的语法检查，但没有Docker，实际容器执行仍需CI或Ubuntu验证。
 
-prepare-source.py按明确允许清单生成源码zip，不扫描复制整个工作目录。首次上传Git前仍需检查文件清单及git diff，gitignore不能清除已经提交过的密钥；本工作目录开始本轮时尚不是Git仓库，没有初始化仓库或向远端推送。
+prepare-source.py按明确允许清单生成源码zip，不扫描复制整个工作目录。上传Git前检查文件清单及git diff，gitignore不能清除已经提交过的密钥。首次公开发布已按允许清单提交，仓库为 https://github.com/ZaraCore/Autolycus ，未提交本机配置和运行数据。

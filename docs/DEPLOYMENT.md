@@ -6,7 +6,7 @@ Windows与Linux共用src/autolycus内的采集、规则、报告、存储和通�
 
 需要Ubuntu 22.04、sudo权限、Git、Docker Engine及Compose v2插件，以及到后台/飞书/镜像仓库的网络。Linux脚本还使用系统自带的bash、flock、tar。脚本不安装Docker、不修改系统自动更新。使用 `sudo bash ...` 时会以root调用Docker；不要将.env中的密钥写进命令行参数。
 
-目前Windows端已通过单元测试与源码包检查；没有在Ubuntu执行过这些部署命令，不能视为Linux验收完成。GitHub Actions已提供Ubuntu 22.04、Python 3.13、Shell语法及Docker构建检查，只有推送仓库后才会真正执行。
+Windows端已通过单元测试与源码包检查；首次GitHub Actions也已通过Ubuntu 22.04、Python 3.13、Shell语法、Compose配置及Docker构建/CLI检查。尚未在用户Ubuntu虚拟机完成部署命令与真实投递验收，不能将CI通过视为现场验收完成。
 
 ## 1. 获取源码与填写配置
 
