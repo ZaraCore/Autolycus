@@ -10,6 +10,7 @@ from .storage import Store
 from .retry import retry
 from .channel_monitor import supplement
 from .model_performance import supplement_models
+from .markdown import escape
 
 
 def execute(config, start, end, demo=None, notify=False, force=False, notification_key=None):
@@ -40,7 +41,7 @@ def execute(config, start, end, demo=None, notify=False, force=False, notificati
                 if notify and config["notification"]["enabled"] and (not alert_key or not store.was_sent(alert_key)):
                     try:
                         # Do not include untrusted backend response or credentials.
-                        retry(lambda: send(f"Autolycus 采集失败\n站点：{config['site']['name']}\n错误类别：{type(exc).__name__}\n未获得业务指标，不能判断平台正常；请检查本地执行记录。"))
+                        retry(lambda: send(f"# Autolycus 采集失败\n\n- 站点：{escape(config['site']['name'])}\n- 错误类别：{type(exc).__name__}\n\n> 未获得业务指标，不能判断平台正常；请检查本地执行记录。"))
                         if alert_key:
                             store.notification(alert_key, "sent")
                     except NotificationError:
@@ -55,7 +56,8 @@ def execute(config, start, end, demo=None, notify=False, force=False, notificati
             report += supplement(config, start, end)
             report += supplement_models(config, start, end)
         if notification_key:
-            report = f"计划时间：{end:%Y-%m-%d %H:%M}（北京时间）\n" + report
+            title, body = report.split("\n", 1)
+            report = f"{title}\n\n- 计划时间：{end:%Y-%m-%d %H:%M}（北京时间）\n" + body.lstrip("\n")
             store.save_report(notification_key, report)
         delivery = "未发送（预览模式）"
         if notify:

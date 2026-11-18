@@ -21,7 +21,14 @@ def send(text, client=None):
             or url.username or url.password or not url.path.startswith("/open-apis/bot/v2/hook/")
             or url.query or url.fragment):
         raise NotificationError("请设置有效的飞书自定义机器人 HTTPS Webhook")
-    payload = {"msg_type": "text", "content": {"text": text}}
+    payload = {
+        "msg_type": "interactive",
+        "card": {
+            "schema": "2.0",
+            "config": {"update_multi": True},
+            "body": {"elements": [{"tag": "markdown", "content": text}]},
+        },
+    }
     if secret := os.environ.get("AUTOLYCUS_FEISHU_SECRET"):
         timestamp = str(int(time.time()))
         signature = hmac.new(f"{timestamp}\n{secret}".encode(), b"", hashlib.sha256).digest()

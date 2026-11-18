@@ -25,7 +25,8 @@ def test_supplied_channels_sort_top20_errors():
     assert row["errors"] == [("400", 273), ("503", 157), ("500", 1)]
     start = datetime.fromtimestamp(data["start"], BEIJING)
     report = render_monitor(data, start, start + timedelta(hours=1))
-    assert sum(line.startswith("(#") for line in report.splitlines()) == 20
+    assert sum(line.startswith("| \\(") for line in report.splitlines()) == 20
+    assert "| 渠道 | 成功率 | 成功/总量 | 主要错误（次数） |" in report
 
 
 def test_groups_below_95_keep_original_relative_order():
@@ -35,7 +36,8 @@ def test_groups_below_95_keep_original_relative_order():
     assert "范围提示" not in report
     assert "重试聚合" in report
     expected = [row for row in data["rows"] if row["total"] > 0 and row["success"] * 100 < row["total"] * 95]
-    assert report.splitlines()[2:] == [f"{row['name']}：{row['success']/row['total']:.2%}（{row['success']}/{row['total']}）" for row in expected]
+    from autolycus.markdown import escape
+    assert report.splitlines()[6:] == [f"| {escape(row['name'])} | {row['success']/row['total']:.2%} | {row['success']}/{row['total']} |" for row in expected]
 
 
 def test_group_threshold_is_strict_and_uses_unrounded_counts():

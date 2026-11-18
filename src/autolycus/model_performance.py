@@ -6,6 +6,7 @@ import httpx
 
 from .collector import CollectionError, collect
 from .retry import retry
+from .markdown import escape
 
 
 def target_config(config, target):
@@ -28,7 +29,7 @@ def latency_line(metrics, model):
         def display(value):
             return f"{value:.1f}秒" if value is not None else "无数据"
         latency = f"P50 {display(metrics.p50_seconds)}｜P95 {display(metrics.p95_seconds)}"
-    return f"{model}：成功{metrics.success:,}次｜{latency}"
+    return f"- **{escape(model)}**：成功{metrics.success:,}次｜{latency}"
 
 
 def supplement_models(config, start, end, client=None):
@@ -46,13 +47,13 @@ def supplement_models(config, start, end, client=None):
                 if line:
                     groups.setdefault(group, []).append(line)
             except CollectionError as exc:
-                groups.setdefault(group, []).append(f"{model}：数据不可用（{type(exc).__name__}），未完成此项检查")
-        lines = ["重点模型延迟｜消费日志（log_type=2）"]
+                groups.setdefault(group, []).append(f"- **{escape(model)}**：数据不可用（{type(exc).__name__}），未完成此项检查")
+        lines = ["## 重点模型延迟｜消费日志（log_type=2）"]
         for group, entries in groups.items():
-            lines.append(f"{group}分组：")
+            lines.extend(["", f"### {escape(group)}分组", ""])
             lines.extend(entries)
         if not groups:
-            lines.append("已配置模型本时段均无成功消费记录，不展示延迟。")
+            lines.extend(["", "已配置模型本时段均无成功消费记录，不展示延迟。"])
         return "\n\n" + "\n".join(lines)
     if client is not None:
         return run(client)
