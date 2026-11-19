@@ -1,12 +1,14 @@
 # Ubuntu 22.04 + Docker 部署
 
+首次部署请先阅读 [README 快速开始](../README.md#ubuntu-快速开始) 和 [配置手册](CONFIGURATION.md)。配置手册包括环境变量、TOML 参数以及时间表和模型名单的修改方法。
+
 ## 范围与前提
 
 Windows与Linux共用src/autolycus内的采集、规则、报告、存储和通知代码。Windows脚本放在scripts/windows；Linux脚本放在scripts/linux；Docker构建文件放在deploy/docker。原Windows本地配置和原管理脚本保留在本机，但不进入源码包。
 
 需要Ubuntu 22.04、sudo权限、Git、Docker Engine及Compose v2插件，以及到后台/飞书/镜像仓库的网络。Linux脚本还使用系统自带的bash、flock、tar。脚本不安装Docker、不修改系统自动更新。使用 `sudo bash ...` 时会以root调用Docker；不要将.env中的密钥写进命令行参数。
 
-Windows端已通过单元测试与源码包检查；首次GitHub Actions也已通过Ubuntu 22.04、Python 3.13、Shell语法、Compose配置及Docker构建/CLI检查。尚未在用户Ubuntu虚拟机完成部署命令与真实投递验收，不能将CI通过视为现场验收完成。
+Windows端及GitHub Actions已通过测试。Ubuntu虚拟机已完成真实数据预览、手动飞书发送、v0.1.1镜像升级、数据库备份与调度健康检查；新版定时卡片实际送达、回退和重启恢复仍需分别验收。CI或healthy状态不等同于真实投递成功。
 
 ## 1. 获取源码与填写配置
 
@@ -32,6 +34,8 @@ nano config.toml
 ## 2. 部署前预览与切换
 
 Windows原任务可以先继续运行；但准备启动Linux自动发送前，必须暂停Windows任务，避免两台机器用独立数据库重复推送。
+
+应先完成 README 中的构建、未来计划预览和真实数据预览。若已构建并手动验证过镜像，可用 `sudo bash scripts/linux/manage.sh resume` 启用调度，无需再次执行 deploy.sh。以下 deploy.sh 是包含重新构建的一体化启动方式，不是只做预览的命令。
 
 ```bash
 sudo bash scripts/linux/deploy.sh
@@ -108,3 +112,20 @@ sudo bash scripts/linux/rollback.sh
 4. 升级前后汇总、通知防重记录不丢失；故障升级不报成功。
 5. 备份能恢复到独立测试库，旧镜像回退能启动或明确提示结构不兼容。
 6. 连续观察工作日、周末和跨夜时段，保留--status核对结果。
+
+
+## 网络与代理
+
+代理不是安装或升级的强制要求。下载源码由 Git 访问 GitHub，基础镜像由 Docker 服务访问镜像仓库，构建依赖由镜像构建过程中的 pip 访问 PyPI；三者的网络配置分别生效。
+
+仅对需要代理的机器使用以下示例，将 `PROXY_HOST:PORT` 替换为实际可达地址。不要把占位值直接运行，也不要将个人地址提交公共仓库：
+
+```bash
+git -c http.proxy=http://PROXY_HOST:PORT clone https://github.com/ZaraCore/Autolycus.git
+sudo docker build --network=host \
+  --build-arg HTTP_PROXY=http://PROXY_HOST:PORT \
+  --build-arg HTTPS_PROXY=http://PROXY_HOST:PORT \
+  -f deploy/docker/Dockerfile -t autolycus:local .
+```
+
+`host` 仅让构建步骤使用 Ubuntu 宿主网络，不修改运行容器网络。Docker 服务拉取基础镜像的代理需在服务器单独配置；只给 Docker 服务配置代理不会自动让 Git 或构建中的 pip 使用代理。普通直连服务器不需要这些参数。升级脚本的可选变量见 [配置手册](CONFIGURATION.md#升级脚本可选参数)。

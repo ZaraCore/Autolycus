@@ -1,5 +1,7 @@
 # Windows兼容说明
 
+参数含义和时间表示例见 [配置手册](CONFIGURATION.md)。Ubuntu 的 `.env` 注入方式不适用于直接运行 Windows CLI；Windows 凭据通过交互输入或当前进程环境变量保存。
+
 现有已安装任务仍运行原run.py和本地配置，本轮不修改任务状态、不发送测试消息。原scripts/manage-task.ps1及config.synlink.toml保留在本机并被Git/源码包排除。
 
 新环境的通用管理脚本为scripts/windows/manage-task.ps1，默认配置config.toml、任务名Autolycus-Inspection。不要在已有旧任务的电脑上再安装一份，否则可能重复发送。若只是继续使用当前旧任务，仍用原本的管理方式即可。
