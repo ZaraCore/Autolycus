@@ -74,6 +74,14 @@ sudo bash scripts/linux/manage.sh backup
 sudo bash scripts/linux/upgrade.sh v0.2.0
 ```
 
+升级默认使用普通构建网络，不强制使用代理。有特殊联网要求的机器可在单次命令中设置 `AUTOLYCUS_UPGRADE_PROXY`（供Git和构建依赖下载使用）及 `AUTOLYCUS_BUILD_NETWORK=host`（仅影响镜像构建）。例如：
+
+```bash
+sudo env AUTOLYCUS_UPGRADE_PROXY=http://YOUR_PROXY_HOST:PORT AUTOLYCUS_BUILD_NETWORK=host bash scripts/linux/upgrade.sh v0.2.0
+```
+
+这些可选参数不写入项目配置或镜像，不配置时无需Clash。Docker后台拉取基础镜像的代理仍由服务器自己的Docker服务管理。程序运行时的网络设置不受这些参数影响。
+
 脚本fetch指定ref，将该提交导出到本地.releases临时源码目录并构建新镜像；不强行checkout、不覆盖未提交修改、不改.env/config.toml。构建和配置检查通过后，停止旧服务，用SQLite在线备份API生成backups目录的新数据库快照，再启动新版。备份失败则恢复旧服务。
 
 镜像用Git提交标识，当前镜像记录于.deploy/active-image，前一镜像记录于.deploy/previous-image。版本可查看.deploy/source-revision，以及镜像的org.opencontainers.image.version标签。直接手动运行Compose时须设置相同AUTOLYCUS_IMAGE，否则可能选到默认local镜像；日常请使用管理脚本。
