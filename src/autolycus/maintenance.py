@@ -30,9 +30,22 @@ def heartbeat(path, **fields):
     temporary.replace(path)
 
 
+def process_identity(pid):
+    """Linux boot + process start time; detects stale state/PID reuse."""
+    if type(pid) is not int or pid <= 0:
+        raise ValueError("invalid pid")
+    fields = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
+    if fields[0] == "Z":
+        raise ValueError("process is a zombie")
+    boot = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
+    return f"{boot}:{fields[19]}"
+
+
 def healthy(path, max_age=300):
     try:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
+        if data.get("state") == "cron":
+            return process_identity(data["pid"]) == data["identity"]
         age = time.time() - data["timestamp"]
         return data.get("state") != "stopped" and 0 <= age < max_age
     except (OSError, ValueError, KeyError, TypeError):

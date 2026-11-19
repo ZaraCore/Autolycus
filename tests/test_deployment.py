@@ -8,7 +8,7 @@ import types
 import pytest
 
 from autolycus.config import load_config
-from autolycus.daemon import eligible, preflight, supervise
+from autolycus.daemon import eligible, preflight
 from autolycus.maintenance import backup_database, heartbeat, healthy
 from autolycus.schedule import BEIJING, slot_key
 from autolycus.storage import Store
@@ -94,27 +94,6 @@ def test_eligible_avoids_duplicate_and_waits_for_crash_lease(config):
     finally:
         store.close()
     assert eligible(config, now.replace(hour=20), {}) is None
-
-
-def test_supervisor_cycle_no_network_and_shutdown_heartbeat(config, monkeypatch):
-    from autolycus import daemon
-    monkeypatch.setenv("AUTOLYCUS_ACCESS_TOKEN", "test")
-    monkeypatch.setenv("AUTOLYCUS_FEISHU_WEBHOOK", "test")
-    monkeypatch.setattr(daemon, "load_config", lambda path: config)
-    monkeypatch.setattr(daemon, "eligible", lambda *args: "test-slot")
-    # POSIX locking is exercised by Linux CI; Windows unit tests stub just fcntl.
-    if sys.platform == "win32":
-        monkeypatch.setitem(sys.modules, "fcntl", types.SimpleNamespace(LOCK_EX=1, LOCK_NB=2, flock=lambda *args: None))
-    calls = []
-    class Child:
-        returncode = 1
-        def __init__(self, command): calls.append(command)
-        def poll(self): return 1
-    monkeypatch.setattr(daemon.subprocess, "Popen", Child)
-    supervise("config/deployment.example.toml", once=True)
-    assert "--scheduled" in calls[0]
-    path = Path(config["storage"]["path"]).parent / "heartbeat.json"
-    assert json.loads(path.read_text())["state"] == "stopped"
 
 
 def test_release_allowlist_excludes_local_configuration_and_history():

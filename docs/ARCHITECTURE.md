@@ -2,7 +2,7 @@
 
 src/autolycus共用HTTP采集、规则、报告、SQLite、飞书发送。Windows DPAPI仅在Windows加载；Linux的fcntl仅在daemon运行时导入。包导入和普通CLI不要求另一平台存在。
 
-daemon为容器调度父进程，现有--scheduled为两平台共用的一次巡检入口；maintenance提供心跳检查和SQLite备份。进程心跳与业务成功状态分开。
+cron 模块生成时间表并启动 Supercronic；daemon 现在是 cron 单次任务的超时与重试包装器，不再空闲轮询。--scheduled 仍是两平台共用的一次巡检入口；maintenance 提供 cron 进程健康检查和 SQLite 备份。调度健康与业务成功状态分开。详见 [cron 调度说明](CRON.md)。
 
 config/deployment.example.toml为通用部署模板，.env.example为环境变量模板。实际.env、config.toml、站点配置、数据库、日志、DPAPI密文、原始响应和历史讨论存本地，不进入源码包。
 

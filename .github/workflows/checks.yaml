@@ -14,3 +14,10 @@ jobs:
       - run: cp .env.example .env && cp config/deployment.example.toml config.toml && docker compose config --quiet
       - run: docker build -f deploy/docker/Dockerfile -t autolycus:test .
       - run: docker run --rm autolycus:test python -m autolycus --help
+      - name: Cron container integration (no network or real credentials)
+        run: >-
+          docker run --rm --network none --read-only --tmpfs /tmp --cap-drop ALL
+          --security-opt no-new-privileges:true
+          -v "$PWD/tests/cron_container_smoke.py:/smoke.py:ro"
+          -v "$PWD/config/deployment.example.toml:/test-config.toml:ro"
+          autolycus:test python /smoke.py
