@@ -6,7 +6,7 @@ import httpx
 
 from .collector import CollectionError, collect
 from .retry import retry
-from .markdown import escape
+from .markdown import escape, table
 from .highlight import color, latency as highlight_latency
 
 
@@ -19,20 +19,19 @@ def target_config(config, target):
     return result
 
 
-def latency_line(metrics, model, group="", config=None):
+def latency_row(metrics, model, config=None):
     if metrics.failure != 0 or metrics.total != metrics.success:
         raise CollectionError("消费日志筛选未生效：响应仍包含失败请求")
     if not metrics.success:
         return None
     if metrics.latency_samples == 0:
-        latency = color("无有效耗时样本", "red", config)
+        p50 = p95 = color("无有效耗时样本", "red", config)
     else:
         def display(value):
             return f"{value:.1f}".rstrip("0").rstrip(".") + "s" if value is not None else "无数据"
-        p50 = highlight_latency(f"p50({display(metrics.p50_seconds)})", metrics.p50_seconds, "p50", config)
-        p95 = highlight_latency(f"p95({display(metrics.p95_seconds)})", metrics.p95_seconds, "p95", config)
-        latency = f"{p50}, {p95}"
-    return f"{escape(model)}({escape(group)}: {metrics.success}): {latency}"
+        p50 = highlight_latency(display(metrics.p50_seconds), metrics.p50_seconds, "p50", config)
+        p95 = highlight_latency(display(metrics.p95_seconds), metrics.p95_seconds, "p95", config)
+    return [f"**{escape(model)}**", str(metrics.success), p50, p95]
 
 
 def supplement_models(config, start, end, client=None):
@@ -46,17 +45,16 @@ def supplement_models(config, start, end, client=None):
             logging.getLogger("autolycus").info("阶段：查询重点模型成功日志延迟")
             try:
                 metrics = retry(lambda: collect(target_config(config, target), start, end, active))
-                line = latency_line(metrics, model, group, config)
-                if line:
-                    groups.setdefault(group, []).append(line)
+                row = latency_row(metrics, model, config)
+                if row:
+                    groups.setdefault(group, []).append(row)
             except CollectionError as exc:
                 warning = color(f"数据不可用（{type(exc).__name__}），未完成此项检查", "red", config)
-                groups.setdefault(group, []).append(f"{escape(model)}({escape(group)}): {warning}")
+                groups.setdefault(group, []).append([f"**{escape(model)}**", warning, "—", "—"])
         lines = ["## 重点模型延迟｜消费日志（log_type=2）"]
         for group, entries in groups.items():
-            lines.extend(["", f"### {escape(group)}分组："])
-            for entry in entries:
-                lines.extend(["", entry])
+            lines.extend(["", f"### {escape(group)}分组：", "",
+                          table(["模型", "成功次数", "P50", "P95"], entries)])
         if not groups:
             lines.extend(["", "已配置模型本时段均无成功消费记录，不展示延迟。"])
         return "\n\n" + "\n".join(lines)

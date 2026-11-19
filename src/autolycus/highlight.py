@@ -33,6 +33,8 @@ def success(text, count, total, config=None):
         for name in ("red", "orange"):
             if count * 100 < total * options[f"success_{name}_below"]:
                 return color(text, name, config)
+        if count * 100 > total * 95:
+            return color(text, "green", config)
     return text
 
 

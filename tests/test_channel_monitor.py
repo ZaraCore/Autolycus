@@ -26,8 +26,8 @@ def test_supplied_channels_sort_top20_errors():
     assert row["errors"] == [("400", 273), ("503", 157), ("500", 1)]
     start = datetime.fromtimestamp(data["start"], BEIJING)
     report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
-    assert sum(line.startswith("(#") for line in report.splitlines()) == 20
-    assert "| ---" not in report
+    assert sum(line.startswith("| (#") for line in report.splitlines()) == 20
+    assert "| 渠道 | 成功率 | 成功/总量 | 主要错误（次数） |" in report
 
 
 def test_groups_below_95_keep_original_relative_order():
@@ -38,8 +38,8 @@ def test_groups_below_95_keep_original_relative_order():
     assert "重试聚合" in report
     expected = [row for row in data["rows"] if row["total"] > 0 and row["success"] * 100 < row["total"] * 95]
     from autolycus.markdown import escape
-    assert [line for line in report.splitlines()[4:] if line] == [
-        f"{escape(row['name'])} - {format(row['success']/row['total']*100, '.2f').rstrip('0').rstrip('.')}% ({row['success']}/{row['total']})" for row in expected]
+    assert [line for line in report.splitlines()[6:] if line] == [
+        f"| **{escape(row['name'])}** | {format(row['success']/row['total']*100, '.2f').rstrip('0').rstrip('.')}% | {row['success']}/{row['total']} |" for row in expected]
 
 
 def test_group_threshold_is_strict_and_uses_unrounded_counts():
@@ -61,8 +61,8 @@ def test_channel_row_matches_reference_punctuation_and_numbers():
                           errors=[("400", 500), ("451", 300), ("429", 200)])]}
     start = datetime.fromtimestamp(data["start"], BEIJING)
     report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
-    assert report.splitlines()[4:] == [
-        f"(#210) {escape('朱老板-image-2.5-base')} - 90% (9000/10000): 400(500), 451(300), 429(200)"]
+    assert report.splitlines()[6:] == [
+        f"| (#210) **{escape('朱老板-image-2.5-base')}** | 90% | 9000/10000 | 400(500), 451(300), 429(200) |"]
 
 
 def test_group_row_matches_reference_format_and_preserves_filter():
@@ -71,7 +71,15 @@ def test_group_row_matches_reference_format_and_preserves_filter():
                      dict(name="Hidden99", success=9900, total=10000)]}
     start = datetime.fromtimestamp(data["start"], BEIJING)
     report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
-    assert report.splitlines()[4:] == ["OpenAI - 90% (9000/10000)"]
+    assert report.splitlines()[6:] == ["| **OpenAI** | 90% | 9000/10000 |"]
+
+
+def test_table_preserves_columns_with_special_characters_in_names():
+    data = {"dimension": "group", "start": 1794798000, "end": 1794801600,
+            "rows": [dict(name="group|*name*\nextra", success=90, total=100)]}
+    start = datetime.fromtimestamp(data["start"], BEIJING)
+    report = render_monitor(data, start, start + timedelta(hours=1))
+    assert "| **group\\|\\*name\\* extra** | <font color='orange'>90%</font> | 90/100 |" in report
 
 
 @pytest.mark.parametrize("dimension", ["channel", "group"])

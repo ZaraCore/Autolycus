@@ -8,7 +8,7 @@ import pytest
 
 from autolycus.collector import CollectionError, normalize
 from autolycus.config import load_config
-from autolycus.model_performance import latency_line, supplement_models, target_config
+from autolycus.model_performance import latency_row, supplement_models, target_config
 from autolycus.schedule import BEIJING
 from autolycus.markdown import escape
 
@@ -32,8 +32,10 @@ def test_success_filter_request_and_grouped_output(monkeypatch):
         return httpx.Response(200, json=sample())
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         text = supplement_models(config, START, END, client)
-    assert "(OpenAI: 3137): p50(39.2s), p95(78.5s)" in text
-    assert "### OpenAI分组：" in text and "**" not in text
+    assert "| 3137 | 39.2s | 78.5s |" in text
+    assert "### OpenAI分组：" in text
+    assert f"**{escape('gpt-image-2.5-sunburst')}**" in text
+    assert "(OpenAI:" not in text
     assert "成功3,137次" not in text
     assert "耗时样本" not in text
     assert "不代表异步任务最终完成" not in text
@@ -46,7 +48,7 @@ def test_failure_records_rejected():
     payload["data"].update(total=3138, failure=1)
     metrics = normalize(payload, config, START, END)
     with pytest.raises(CollectionError, match="筛选未生效"):
-        latency_line(metrics, "model")
+        latency_row(metrics, "model")
 
 
 @pytest.mark.parametrize("group,count,p50,p95", [("OpenAI", 8000, 50, 100), ("OpenAI 官key", 800, 40, 80)])
@@ -56,17 +58,26 @@ def test_latency_row_matches_reference(group, count, p50, p95):
     payload["data"].update(total=count, success=count, duration_count=count,
                            quantiles={"p50": p50, "p95": p95})
     metrics = normalize(payload, config, START, END)
-    assert latency_line(metrics, "gpt-image-2", group) == (
-        f"{escape('gpt-image-2')}({group}: {count}): p50({p50}s), p95({p95}s)")
+    assert latency_row(metrics, "gpt-image-2") == [
+        f"**{escape('gpt-image-2')}**", str(count), f"{p50}s", f"{p95}s"]
 
 
 def test_zero_success_is_omitted_and_missing_samples_are_explicit():
     config = load_config("tests/fixtures/site_config.toml")
     payload = sample()
     payload["data"].update(total=0, success=0, failure=0, duration_count=0)
-    assert latency_line(normalize(payload, config, START, END), "model") is None
+    assert latency_row(normalize(payload, config, START, END), "model") is None
     payload["data"].update(total=10, success=10)
-    assert "无有效耗时样本" in latency_line(normalize(payload, config, START, END), "model")
+    assert "无有效耗时样本" in latency_row(normalize(payload, config, START, END), "model")[2]
+
+
+def test_model_table_escapes_name_and_preserves_missing_percentiles():
+    config = load_config("tests/fixtures/site_config.toml")
+    payload = sample()
+    payload["data"]["quantiles"] = {"p50": None, "p95": None}
+    row = latency_row(normalize(payload, config, START, END), "model|*name*\nextra")
+    assert row == ["**model\\|\\*name\\* extra**", "3137",
+                   "<font color='red'>无数据</font>", "<font color='red'>无数据</font>"]
 
 
 def test_one_target_failure_preserves_others(monkeypatch):
@@ -79,7 +90,8 @@ def test_one_target_failure_preserves_others(monkeypatch):
         return httpx.Response(200, json=sample())
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         text = supplement_models(config, START, END, client)
-    assert "数据不可用" in text and "(OpenAI 官key: 3137): p50(39.2s), p95(78.5s)" in text
+    assert "数据不可用" in text and "### OpenAI 官key分组：" in text
+    assert "| 3137 | 39.2s | 78.5s |" in text
 
 
 def test_relative_query_cannot_be_relabelled_fixed():
@@ -111,7 +123,8 @@ def test_banana_only_displays_models_with_successful_calls(monkeypatch):
         report = supplement_models(config, START, END, client)
     assert len(seen) == 14
     assert report == ("\n\n## 重点模型延迟｜消费日志（log_type=2）\n\n### Banana分组：\n\n"
-                      + escape("gemini-3-pro-image") + "(Banana: 3137): p50(39.2s), p95(78.5s)")
+                      + "| 模型 | 成功次数 | P50 | P95 |\n| --- | --- | --- | --- |\n| **"
+                      + escape("gemini-3-pro-image") + "** | 3137 | 39.2s | 78.5s |")
 
 
 def test_no_success_records_omit_all_group_headings(monkeypatch):
@@ -139,6 +152,7 @@ def test_all_twenty_four_configured_targets_are_queried(monkeypatch):
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         report = supplement_models(config, START, END, client)
     assert seen == [(t["group"], t["model"]) for t in targets]
-    assert all(f"({group}: 3137)" in report for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key"))
+    assert report.count("| 3137 | 39.2s | 78.5s |") == 24
+    assert report.count("| 模型 | 成功次数 | P50 | P95 |") == 4
 
     assert [report.index(f"### {group}分组：") for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key")] == sorted(report.index(f"### {group}分组：") for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key"))

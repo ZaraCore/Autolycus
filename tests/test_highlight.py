@@ -12,7 +12,7 @@ from autolycus.schedule import BEIJING
 
 @pytest.mark.parametrize("count,expected", [
     (0, "red"), (6999, "red"), (7000, "orange"), (9499, "orange"),
-    (9500, None), (10000, None)])
+    (9500, None), (9501, "green"), (10000, "green")])
 def test_success_boundaries(count, expected):
     result = success("rate", count, 10000)
     assert result == (f"<font color='{expected}'>rate</font>" if expected else "rate")
@@ -62,7 +62,7 @@ def test_channel_colors_only_percentage_and_escapes_names():
             "rows": [{"key": "210", "name": "<font>name", "success": 90,
                       "total": 100, "failure": 10, "errors": [("400", 10)]}]}
     report = render_monitor(data, start, start + timedelta(hours=1))
-    assert "(#210) &lt;font&gt;name - <font color='orange'>90%</font> (90/100): 400(10)" in report
+    assert "| (#210) **&lt;font&gt;name** | <font color='orange'>90%</font> | 90/100 | 400(10) |" in report
     assert report.count("<font ") == 1
 
 
@@ -79,5 +79,5 @@ def test_model_colors_each_latency_and_failure_separately(monkeypatch):
     start = datetime(2026, 11, 19, 10, tzinfo=BEIJING)
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         report = supplement_models(config, start, start + timedelta(hours=1), client)
-    assert "slow(Banana: 100): <font color='orange'>p50(61s)</font>, <font color='red'>p95(241s)</font>" in report
-    assert "broken(Banana): <font color='red'>数据不可用" in report
+    assert "| **slow** | 100 | <font color='orange'>61s</font> | <font color='red'>241s</font> |" in report
+    assert "| **broken** | <font color='red'>数据不可用" in report

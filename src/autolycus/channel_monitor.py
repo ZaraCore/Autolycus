@@ -7,7 +7,7 @@ import httpx
 from .collector import CollectionError
 from .retry import retry
 from .schedule import BEIJING
-from .markdown import escape
+from .markdown import escape, table
 from .highlight import color, success
 
 
@@ -105,15 +105,21 @@ def render_monitor(data, start, end, config=None):
         rows = [row for row in rows if row["total"] > 0 and row["success"] * 100 < row["total"] * 95]
         if data["rows"] and not rows:
             lines.append("无成功率低于95%的分组（仅检查有调用记录的分组）。")
+    entries = []
     for row in rows:
         rate = f"{row['success'] / row['total'] * 100:.2f}".rstrip("0").rstrip(".") + "%" if row["total"] else "无调用"
         rate = success(rate, row["success"], row["total"], config)
-        name = f"(#{escape(clean(row['key']))}) {escape(clean(row['name']))}" if dimension == "channel" else escape(clean(row["name"]))
-        line = f"{name} - {rate} ({row['success']}/{row['total']})"
+        name = f"(#{escape(clean(row['key']))}) **{escape(clean(row['name']))}**" if dimension == "channel" else f"**{escape(clean(row['name']))}**"
+        entry = [name, rate, f"{row['success']}/{row['total']}"]
         if dimension == "channel":
             errors = ", ".join(f"{escape(code)}({number})" for code, number in row["errors"])
-            line += ": " + (errors or ("无失败" if not row["failure"] else "后台未提供错误码分布"))
-        lines.extend([line, ""])
+            entry.append(errors or ("无失败" if not row["failure"] else "后台未提供错误码分布"))
+        entries.append(entry)
+    if entries:
+        headers = ["渠道" if dimension == "channel" else "分组", "成功率", "成功/总量"]
+        if dimension == "channel":
+            headers.append("主要错误（次数）")
+        lines.append(table(headers, entries))
     return "\n".join(lines)
 
 
