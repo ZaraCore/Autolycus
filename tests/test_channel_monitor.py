@@ -9,6 +9,7 @@ from autolycus.channel_monitor import parse, render_monitor, collect_monitor, su
 from autolycus.collector import CollectionError
 from autolycus.config import load_config
 from autolycus.schedule import BEIJING
+from autolycus.markdown import escape
 
 
 def fixture(dimension):
@@ -24,20 +25,21 @@ def test_supplied_channels_sort_top20_errors():
     row = next(row for row in data["rows"] if row["key"] == "387")
     assert row["errors"] == [("400", 273), ("503", 157), ("500", 1)]
     start = datetime.fromtimestamp(data["start"], BEIJING)
-    report = render_monitor(data, start, start + timedelta(hours=1))
-    assert sum(line.startswith("| \\(") for line in report.splitlines()) == 20
-    assert "| 渠道 | 成功率 | 成功/总量 | 主要错误（次数） |" in report
+    report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
+    assert sum(line.startswith("(#") for line in report.splitlines()) == 20
+    assert "| ---" not in report
 
 
 def test_groups_below_95_keep_original_relative_order():
     data = parse(fixture("group"), "group")
     assert len(data["rows"]) == 20
-    report = render_monitor(data, datetime(2026,11,16,10,tzinfo=BEIJING), datetime(2026,11,16,11,tzinfo=BEIJING))
+    report = render_monitor(data, datetime(2026,11,16,10,tzinfo=BEIJING), datetime(2026,11,16,11,tzinfo=BEIJING), {"highlight": {"enabled": False}})
     assert "范围提示" not in report
     assert "重试聚合" in report
     expected = [row for row in data["rows"] if row["total"] > 0 and row["success"] * 100 < row["total"] * 95]
     from autolycus.markdown import escape
-    assert report.splitlines()[6:] == [f"| {escape(row['name'])} | {row['success']/row['total']:.2%} | {row['success']}/{row['total']} |" for row in expected]
+    assert [line for line in report.splitlines()[4:] if line] == [
+        f"{escape(row['name'])} - {format(row['success']/row['total']*100, '.2f').rstrip('0').rstrip('.')}% ({row['success']}/{row['total']})" for row in expected]
 
 
 def test_group_threshold_is_strict_and_uses_unrounded_counts():
@@ -47,9 +49,29 @@ def test_group_threshold_is_strict_and_uses_unrounded_counts():
                      dict(name="empty", success=0, total=0),
                      dict(name="zero", success=0, total=1)]}
     start = datetime.fromtimestamp(data["start"], BEIJING)
-    report = render_monitor(data, start, start + timedelta(hours=1))
+    report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
     assert "exact95" not in report and "empty" not in report
     assert report.index("below95") < report.index("zero")
+
+
+def test_channel_row_matches_reference_punctuation_and_numbers():
+    data = {"dimension": "channel", "start": 1794798000, "end": 1794801600,
+            "rows": [dict(key="210", name="朱老板-image-2.5-base", success=9000,
+                          total=10000, failure=1000,
+                          errors=[("400", 500), ("451", 300), ("429", 200)])]}
+    start = datetime.fromtimestamp(data["start"], BEIJING)
+    report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
+    assert report.splitlines()[4:] == [
+        f"(#210) {escape('朱老板-image-2.5-base')} - 90% (9000/10000): 400(500), 451(300), 429(200)"]
+
+
+def test_group_row_matches_reference_format_and_preserves_filter():
+    data = {"dimension": "group", "start": 1794798000, "end": 1794801600,
+            "rows": [dict(name="OpenAI", success=9000, total=10000),
+                     dict(name="Hidden99", success=9900, total=10000)]}
+    start = datetime.fromtimestamp(data["start"], BEIJING)
+    report = render_monitor(data, start, start + timedelta(hours=1), {"highlight": {"enabled": False}})
+    assert report.splitlines()[4:] == ["OpenAI - 90% (9000/10000)"]
 
 
 @pytest.mark.parametrize("dimension", ["channel", "group"])

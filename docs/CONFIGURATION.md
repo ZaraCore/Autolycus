@@ -1,6 +1,6 @@
 # 配置手册
 
-命令默认在 Ubuntu 的项目目录执行。Windows 不自动读取 `.env`，差异见 [Windows 说明](WINDOWS.md)。本手册对应当前实现，不代表后续 cron 调度已完成。
+命令默认在 Ubuntu 的项目目录执行。Windows 不自动读取 `.env`，差异见 [Windows 说明](WINDOWS.md)。本手册对应 v0.2.0：Ubuntu 使用容器内 cron，Windows 保留任务计划。
 
 ## 文件用途与优先级
 
@@ -101,7 +101,7 @@ CLI 兼容 `relative` 模式，目前只支持最近一小时 `range="1h"`；容
 | `max_drop_points` | `10.0` | 相比有效历史基准下降超过多少个百分点时判异常，取值 0—100。 |
 | `history_days` | `7` | 搜索有效历史基准的天数，正整数；无基准时只检查固定阈值。 |
 
-当前正式报告隐藏了主统计评估文字，规则仍在内部计算。`success_rate_min` 不控制分组表的 95% 筛选；渠道前 20、错误码前三、分组低于 95% 都是当前固定展示规则，尚无配置参数。
+当前正式报告隐藏了主统计评估文字，规则仍在内部计算。`success_rate_min` 不控制分组结果的 95% 筛选；渠道前 20、错误码前三、分组低于 95% 都是当前固定展示规则，尚无配置参数。渠道、分组和模型结果均按 README 中的示例逐行展示，不使用表格；模型每行直接包含分组和成功次数。
 
 ### `[storage]`、`[notification]`
 
@@ -123,7 +123,7 @@ path = "/channel_monitor"
 
 ### `[model_performance]` 重点模型名单
 
-模板默认关闭。开启时将该段改为以下结构；不要重复同一组、模型组合：
+模板已预置 24 个目标，默认关闭。核对名称后，将现有 `[model_performance]` 下的 `enabled` 改为 `true` 即可。以下是只保留两个目标的最小示例；若采用示例，请替换整个模型配置段，不要与现有目标重复追加：
 
 ```toml
 [model_performance]
@@ -139,6 +139,30 @@ model = "gemini-3-pro-image"
 ```
 
 `group`、`model` 必须与后台实际值完全一致，包括空格和后缀。每个目标独立查询，固定使用成功消费日志 `log_type=2`；无成功记录时省略，查询失败会标不可用。模型越多，查询耗时通常越长。
+
+部署模板现已预置 OpenAI、OpenAI 官key、Banana、Gemini官key 共 24 个目标，默认仍为关闭；已有部署不会自动合并模板名单，需要更新实际使用的 `config.toml`。Banana 与 Gemini官key 均包含：`gemini-2.5-flash-image`、`gemini-3-pro-image`、`gemini-3-pro-image-preview`、`gemini-3.1-flash-image`、`gemini-3.1-flash-image-preview`、`gemini-3.1-flash-lite-image`、`gemini-nano-banana-2.1`。报告按分组显示标题，无成功记录的模型和空分组均省略。
+
+## 异常数值颜色 `[highlight]`
+
+默认启用飞书卡片数值着色，省略本段也使用以下默认值：
+
+```toml
+[highlight]
+enabled = true
+success_red_below = 70
+success_orange_below = 95
+p50_orange_above_seconds = 60
+p95_orange_above_seconds = 120
+latency_red_multiplier = 2
+```
+
+- 渠道、分组成功率低于 70% 标红，70% 至不足 95% 标橙，95% 及以上保留默认颜色；判断使用未四舍五入的次数。
+- 模型 P50 超过 60 秒、P95 超过 120 秒标橙；分别超过 120 秒、240 秒标红。等于橙色阈值不标色，等于红色阈值仍标橙。
+- 查询失败、数据不可用、缺失耗时或没有有效耗时样本标红。无成功调用的模型仍省略。
+- 这些是初始展示阈值，不是后台 SLA，不改变规则判定、统计口径或分组低于 95% 的筛选。初始延迟阈值统一适用于所有模型。
+- `enabled=false` 关闭颜色。成功率阈值使用 0—100，满足红色不大于橙色；延迟阈值为正秒数，红色倍数大于 1。
+
+仅关键数值及不可用提示着色，行格式与分组标题保留。着色采用飞书扩展 `<font color='red'>` / `<font color='orange'>` 标签，其他 Markdown 工具不一定支持。定时报告缓存保留生成时的颜色，修改阈值不重新渲染已缓存正文。
 
 ## 修改汇报时间
 
@@ -211,7 +235,7 @@ sudo bash scripts/linux/manage.sh resume
 sudo bash scripts/linux/manage.sh status
 ```
 
-`preview` 不发送消息；`resume` 创建或重建服务，应用当前配置。单纯 `docker restart` 不刷新已注入的 `.env`。TOML 保存后也需要重新加载调度进程。恢复时若仍在计划宽限窗口内，可能立即执行。
+`preview` 不发送消息；`resume` 创建或重建服务，应用当前配置。单纯 `docker restart` 不刷新已注入的 `.env`。TOML 保存后也需要重新加载调度进程。cron 恢复时等待下一个触发点，不会仅因仍在宽限窗口内而补执行上一计划；宽限窗口用于限制已触发任务和重试。
 
 ## 升级脚本可选参数
 
@@ -231,7 +255,7 @@ sudo bash scripts/linux/manage.sh status
 | `config --quiet` 无输出 | Compose 格式通过，不代表凭据有效、TOML 业务校验通过或后台连通。 |
 | HTTP 401 | 核对后台令牌、用户 ID、权限与有效期；令牌不加 `Bearer `。 |
 | `通知：未发送（预览模式）` | 预期行为，普通查询未明确要求发送。 |
-| `healthy` | 调度心跳正常，不证明投递成功。 |
+| `healthy` | cron 调度进程存活，不证明投递成功。 |
 | `sent` | 飞书接口确认接收，仍需抽查群消息。 |
 | `missing` | 计划无执行记录；关机、暂停、休眠或改时间表均可能造成，不等于执行报错。 |
 | 模型未展示 | 可能没有成功消费记录，也应核对分组、模型名称完全一致。 |

@@ -33,9 +33,114 @@ enabled = true
 path = "/channel_monitor"
 [model_performance]
 enabled = false
-# Add [[model_performance.targets]] with group/model, then enable.
+# Confirm the group/model names, then enable.
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.5-flare"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.5-sunburst"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.6-flare"
+
+[[model_performance.targets]]
+group = "OpenAI"
+model = "gpt-image-2.6-sunburst"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.5-flare"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.5-sunburst"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.6-flare"
+
+[[model_performance.targets]]
+group = "OpenAI 官key"
+model = "gpt-image-2.6-sunburst"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-2.5-flash-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3-pro-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3-pro-image-preview"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3.1-flash-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3.1-flash-image-preview"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3.1-flash-lite-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-nano-banana-2.1"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-2.5-flash-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3-pro-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3.1-flash-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3-pro-image-preview"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3.1-flash-image-preview"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-3.1-flash-lite-image"
+
+[[model_performance.targets]]
+group = "Gemini官key"
+model = "gemini-nano-banana-2.1"
+
 [schedule]
 weekday_times = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
 weekend_times = ["09:00", "12:00", "18:00"]
 interval_mode = "planned_chain"
 grace_minutes = 10
+
+# Display colors only; these do not change assessment or group filtering.
+[highlight]
+enabled = true
+success_red_below = 70
+success_orange_below = 95
+p50_orange_above_seconds = 60
+p95_orange_above_seconds = 120
+latency_red_multiplier = 2

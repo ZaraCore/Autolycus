@@ -2,6 +2,7 @@ from pathlib import Path
 import math
 import tomllib
 import os
+from .highlight import settings as highlight_settings
 from urllib.parse import urlsplit
 
 
@@ -81,5 +82,6 @@ def load_config(path):
             if pair in seen:
                 raise ValueError("模型延迟目标不能重复")
             seen.add(pair)
+    highlight_settings(config)
     config["storage"]["path"] = str(database if database.is_absolute() else path.parent / database)
     return config

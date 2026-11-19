@@ -27,9 +27,9 @@ nano config.toml
 
 `.env`填写真实后台URL、站点ID、站点名、管理员用户ID/系统令牌、飞书Webhook及签名密钥。含 `$`、`#`、空格的值使用单引号，Compose进行注入；脚本不source这个文件。环境变量覆盖TOML的站点与数据库设置。当前Python命令行不自动解析.env，容器通过Compose env_file接收配置。
 
-`config.toml`只放非敏感的时间表、字段映射、阈值、重点模型名单，必须可被容器非root用户读取。不要把令牌写在TOML里。Docker示例默认关闭重点模型，需迁入本地所需的 group/model targets 后启用，避免公开仓库携带某个站点的定制名单。已有Windows配置可以作为人工迁入依据，DPAPI密文不能迁入Linux。
+`config.toml`只放非敏感的时间表、字段映射、阈值、重点模型名单，必须可被容器非root用户读取。不要把令牌写在TOML里。Docker示例预置 24 个重点模型目标但默认关闭，核对后台实际名称后启用。升级不会将模板自动合并到现有 config.toml，已有部署需人工迁入所需 targets，见 [v0.2.0 发布说明](RELEASE-v0.2.0.md)。已有Windows配置可以作为人工迁入依据，DPAPI密文不能迁入Linux。
 
-后台适配使用 GET /api/metrics/query 的 custom/start/end；渠道查询仍是POST /channel_monitor?Action=Query的滚动窗口，未解决其精确时间区间限制。部署不改变已验收的报告格式和这项限制。
+后台适配使用 GET /api/metrics/query 的 custom/start/end；渠道查询仍是POST /channel_monitor?Action=Query的滚动窗口，未解决其精确时间区间限制。v0.2.0 更新了报告的逐行展示和颜色提示，但不改变这项时间范围限制。
 
 ## 2. 部署前预览与切换
 
@@ -41,7 +41,7 @@ Windows原任务可以先继续运行；但准备启动Linux自动发送前，�
 sudo bash scripts/linux/deploy.sh
 ```
 
-脚本构建镜像、校验必填配置、启动容器并等待调度心跳健康。如果配置文件不存在，会创建模板并停止，填写后再运行。返回成功只说明调度进程健康，不代表真实接口及投递已验收。这个命令启动后可能在当前允许窗口内立即执行报告。
+脚本构建镜像、校验必填配置、启动容器并等待 cron 进程健康。如果配置文件不存在，会创建模板并停止，填写后再运行。返回成功只说明调度进程健康，不代表真实接口及投递已验收。新版 cron 启动后等待下一个计划触发点，不补执行启动前已经错过的任务。
 
 ```bash
 sudo bash scripts/linux/manage.sh preview

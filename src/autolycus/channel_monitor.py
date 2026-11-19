@@ -7,7 +7,8 @@ import httpx
 from .collector import CollectionError
 from .retry import retry
 from .schedule import BEIJING
-from .markdown import escape, table
+from .markdown import escape
+from .highlight import color, success
 
 
 def count(value):
@@ -91,7 +92,7 @@ def clean(value):
     return " ".join(value.split())[:100]
 
 
-def render_monitor(data, start, end):
+def render_monitor(data, start, end, config=None):
     dimension = data["dimension"]
     actual_start = datetime.fromtimestamp(data["start"], BEIJING)
     actual_end = datetime.fromtimestamp(data["end"], BEIJING)
@@ -99,25 +100,20 @@ def render_monitor(data, start, end):
     lines = ["## " + title, "", f"实际区间：{actual_start:%m-%d %H:%M:%S}—{actual_end:%m-%d %H:%M:%S}（北京时间）", ""]
     rows = data["rows"][:20] if dimension == "channel" else data["rows"]
     if not data["rows"]:
-        lines.append("后台未返回记录，不能据此判断全部正常。")
+        lines.append(color("后台未返回记录，不能据此判断全部正常。", "red", config))
     if dimension == "group":
         rows = [row for row in rows if row["total"] > 0 and row["success"] * 100 < row["total"] * 95]
         if data["rows"] and not rows:
             lines.append("无成功率低于95%的分组（仅检查有调用记录的分组）。")
-    entries = []
     for row in rows:
-        rate = f"{row['success'] / row['total']:.2%}" if row["total"] else "无调用"
-        name = f"(#{clean(row['key'])}) {clean(row['name'])}" if dimension == "channel" else clean(row["name"])
-        entry = [escape(name), rate, f"{row['success']}/{row['total']}"]
+        rate = f"{row['success'] / row['total'] * 100:.2f}".rstrip("0").rstrip(".") + "%" if row["total"] else "无调用"
+        rate = success(rate, row["success"], row["total"], config)
+        name = f"(#{escape(clean(row['key']))}) {escape(clean(row['name']))}" if dimension == "channel" else escape(clean(row["name"]))
+        line = f"{name} - {rate} ({row['success']}/{row['total']})"
         if dimension == "channel":
-            errors = "、".join(f"{code}({number})" for code, number in row["errors"])
-            entry.append(escape(errors or ("无失败" if not row["failure"] else "后台未提供错误码分布")))
-        entries.append(entry)
-    if entries:
-        headers = ["渠道" if dimension == "channel" else "分组", "成功率", "成功/总量"]
-        if dimension == "channel":
-            headers.append("主要错误（次数）")
-        lines.append(table(headers, entries))
+            errors = ", ".join(f"{escape(code)}({number})" for code, number in row["errors"])
+            line += ": " + (errors or ("无失败" if not row["failure"] else "后台未提供错误码分布"))
+        lines.extend([line, ""])
     return "\n".join(lines)
 
 
@@ -128,8 +124,9 @@ def supplement(config, start, end):
     for dimension in ("channel", "group"):
         try:
             data = retry(lambda: collect_monitor(config, dimension, int((end-start).total_seconds())))
-            sections.append(render_monitor(data, start, end))
+            sections.append(render_monitor(data, start, end, config))
         except (CollectionError, ValueError, OverflowError, OSError) as exc:
             label = "分渠道" if dimension == "channel" else "分组聚合"
-            sections.append(f"## {label}\n\n> {label}：数据不可用（{type(exc).__name__}），此项未完成巡检。")
+            warning = color(f"{label}：数据不可用（{type(exc).__name__}），此项未完成巡检。", "red", config)
+            sections.append(f"## {label}\n\n> {warning}")
     return "\n\n" + "\n\n".join(sections)

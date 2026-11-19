@@ -85,6 +85,34 @@ group = "OpenAI 官key"
 model = "gpt-image-2.6-sunburst"
 
 [[model_performance.targets]]
+group = "Banana"
+model = "gemini-2.5-flash-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3-pro-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3-pro-image-preview"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3.1-flash-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3.1-flash-image-preview"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-3.1-flash-lite-image"
+
+[[model_performance.targets]]
+group = "Banana"
+model = "gemini-nano-banana-2.1"
+
+[[model_performance.targets]]
 group = "Gemini官key"
 model = "gemini-2.5-flash-image"
 
