@@ -2,10 +2,12 @@ import base64
 import hashlib
 import hmac
 import os
+import re
 import time
 from urllib.parse import urlsplit
 
 import httpx
+from .markdown import table_count
 
 
 class NotificationError(Exception):
@@ -21,6 +23,8 @@ def send(text, client=None):
             or url.username or url.password or not url.path.startswith("/open-apis/bot/v2/hook/")
             or url.query or url.fragment):
         raise NotificationError("请设置有效的飞书自定义机器人 HTTPS Webhook")
+    if table_count(text) > 4:
+        raise NotificationError("飞书单个 Markdown 组件最多支持4张表格；当前报告超限，请合并表格或生成新版报告")
     payload = {
         "msg_type": "interactive",
         "card": {
@@ -46,7 +50,13 @@ def send(text, client=None):
         except ValueError:
             raise NotificationError("飞书响应格式错误") from None
         if not isinstance(result, dict) or type(result.get("code")) is not int or result["code"] != 0:
-            raise NotificationError("飞书返回业务失败，请检查机器人安全设置")
+            # Only report numeric codes, never upstream bodies/URLs/secrets.
+            code = result.get("code") if isinstance(result, dict) else None
+            code = code if type(code) is int else "未知"
+            match = re.search(r"ErrCode:\s*(\d{1,9})\b", str(result.get("msg", ""))) if isinstance(result, dict) else None
+            detail = f"，子错误码：{match[1]}" if match else ""
+            reason = "：卡片表格数量超过平台限制" if match and match[1] == "11310" else "，请按错误码核对卡片内容或机器人配置"
+            raise NotificationError(f"飞书返回业务失败（错误码：{code}{detail}）{reason}")
     if client is not None:
         request(client)
     else:

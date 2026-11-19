@@ -17,15 +17,15 @@ Autolycus 定时查询已适配的 New API 后台统计接口，将巡检结果�
 | --- | --- |
 | 渠道成功率 | 渠道、成功率、成功/总量、主要错误（次数） |
 | 分组成功率 | 分组、成功率、成功/总量 |
-| 重点模型延迟 | 模型、成功次数、P50、P95 |
+| 重点模型延迟 | 分组、模型、成功次数、P50、P95 |
 
-模型延迟按上述四个分组显示小标题（例如 `Banana分组：`），每组一张表，模型单元格不重复分组名称。Banana 与 Gemini官key 各配置 7 个 Gemini 图像模型；整个分组无成功记录时不显示标题，查询失败仍提示数据不可用。部署模板默认关闭模型监测，核对名单后启用。
+四个分组的模型延迟合并为一张大表，每行通过“分组”列注明归属，按分组保留原顺序。整份报告最多三张表，避免超过飞书单个 Markdown 组件的四表限制。Banana 与 Gemini官key 各配置 7 个 Gemini 图像模型；无成功记录的模型不显示数据行，查询失败仍提示数据不可用。部署模板默认关闭模型监测，核对名单后启用。
 
 百分比最多保留两位小数，延迟用 `s` 表示秒，保留一位小数并省略末尾的 `.0`；次数不添加千位分隔符。无有效耗时样本或查询失败时仍明确提示，不伪造数值。
 
 性能统计使用固定起止时间；渠道监控使用后台返回的滚动窗口，两者分别标注区间。成功消费记录的延迟不代表异步任务最终完成。
 
-本次展示优化见 [v0.2.1 发布说明](docs/RELEASE-v0.2.1.md)；从早期版本迁移 cron 和配置时，同时参阅 [v0.2.0 发布说明](docs/RELEASE-v0.2.0.md)。
+本次展示优化见 [v0.2.2 发布说明](docs/RELEASE-v0.2.2.md)；从早期版本迁移 cron 和配置时，同时参阅 [v0.2.0 发布说明](docs/RELEASE-v0.2.0.md)。
 
 ## 文档入口
 
@@ -94,7 +94,7 @@ sudo bash scripts/linux/manage.sh pause    # 暂停调度
 sudo bash scripts/linux/manage.sh resume   # 恢复，并应用本地配置变化
 sudo bash scripts/linux/manage.sh preview  # 真实数据预览，不发送
 sudo bash scripts/linux/manage.sh backup   # 备份运行数据库
-sudo bash scripts/linux/upgrade.sh v0.2.1  # 升级到本次发布版本
+sudo bash scripts/linux/upgrade.sh v0.2.2  # 升级到本次发布版本
 sudo bash scripts/linux/rollback.sh        # 切回记录的前一镜像
 ```
 

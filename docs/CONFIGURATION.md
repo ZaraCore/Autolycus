@@ -1,6 +1,6 @@
 # 配置手册
 
-命令默认在 Ubuntu 的项目目录执行。Windows 不自动读取 `.env`，差异见 [Windows 说明](WINDOWS.md)。本手册对应 v0.2.1：Ubuntu 使用容器内 cron，Windows 保留任务计划。
+命令默认在 Ubuntu 的项目目录执行。Windows 不自动读取 `.env`，差异见 [Windows 说明](WINDOWS.md)。本手册对应 v0.2.2：Ubuntu 使用容器内 cron，Windows 保留任务计划。
 
 ## 文件用途与优先级
 
@@ -101,7 +101,7 @@ CLI 兼容 `relative` 模式，目前只支持最近一小时 `range="1h"`；容
 | `max_drop_points` | `10.0` | 相比有效历史基准下降超过多少个百分点时判异常，取值 0—100。 |
 | `history_days` | `7` | 搜索有效历史基准的天数，正整数；无基准时只检查固定阈值。 |
 
-当前正式报告隐藏了主统计评估文字，规则仍在内部计算。`success_rate_min` 不控制分组结果的 95% 筛选；渠道前 20、错误码前三、分组低于 95% 都是当前固定展示规则，尚无配置参数。三类结果均使用表格，名称加粗；模型按分组各列一张表，不在模型单元格中重复分组名。
+当前正式报告隐藏了主统计评估文字，规则仍在内部计算。`success_rate_min` 不控制分组结果的 95% 筛选；渠道前 20、错误码前三、分组低于 95% 都是当前固定展示规则，尚无配置参数。三类结果均使用表格，名称加粗；模型合并为一张带分组列的大表，按分组保留原顺序，名称与分组加粗。整份报告最多三张表；发送器会在本地拒绝超过四张表的正文。
 
 ### `[storage]`、`[notification]`
 
@@ -140,7 +140,7 @@ model = "gemini-3-pro-image"
 
 `group`、`model` 必须与后台实际值完全一致，包括空格和后缀。每个目标独立查询，固定使用成功消费日志 `log_type=2`；无成功记录时省略，查询失败会标不可用。模型越多，查询耗时通常越长。
 
-部署模板现已预置 OpenAI、OpenAI 官key、Banana、Gemini官key 共 24 个目标，默认仍为关闭；已有部署不会自动合并模板名单，需要更新实际使用的 `config.toml`。Banana 与 Gemini官key 均包含：`gemini-2.5-flash-image`、`gemini-3-pro-image`、`gemini-3-pro-image-preview`、`gemini-3.1-flash-image`、`gemini-3.1-flash-image-preview`、`gemini-3.1-flash-lite-image`、`gemini-nano-banana-2.1`。报告按分组显示标题，无成功记录的模型和空分组均省略。
+部署模板现已预置 OpenAI、OpenAI 官key、Banana、Gemini官key 共 24 个目标，默认仍为关闭；已有部署不会自动合并模板名单，需要更新实际使用的 `config.toml`。Banana 与 Gemini官key 均包含：`gemini-2.5-flash-image`、`gemini-3-pro-image`、`gemini-3-pro-image-preview`、`gemini-3.1-flash-image`、`gemini-3.1-flash-image-preview`、`gemini-3.1-flash-lite-image`、`gemini-nano-banana-2.1`。报告在同一张表中通过分组列显示归属，无成功记录的模型省略，查询失败仍明确提示。
 
 ## 异常数值颜色 `[highlight]`
 
@@ -253,6 +253,7 @@ sudo bash scripts/linux/manage.sh status
 | 结果 | 含义或检查方向 |
 | --- | --- |
 | `config --quiet` 无输出 | Compose 格式通过，不代表凭据有效、TOML 业务校验通过或后台连通。 |
+| 飞书 11246 / 子错误码 11310 | 卡片表格数量超限。v0.2.2 合并模型表；历史缓存旧报告仍可能超限，应预览或检查新计划，不随意强制重发。 |
 | HTTP 401 | 核对后台令牌、用户 ID、权限与有效期；令牌不加 `Bearer `。 |
 | `通知：未发送（预览模式）` | 预期行为，普通查询未明确要求发送。 |
 | `healthy` | cron 调度进程存活，不证明投递成功。 |

@@ -33,7 +33,8 @@ def test_success_filter_request_and_grouped_output(monkeypatch):
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         text = supplement_models(config, START, END, client)
     assert "| 3137 | 39.2s | 78.5s |" in text
-    assert "### OpenAI分组：" in text
+    assert "| 分组 | 模型 | 成功次数 | P50 | P95 |" in text
+    assert "| **OpenAI** |" in text
     assert f"**{escape('gpt-image-2.5-sunburst')}**" in text
     assert "(OpenAI:" not in text
     assert "成功3,137次" not in text
@@ -90,7 +91,7 @@ def test_one_target_failure_preserves_others(monkeypatch):
         return httpx.Response(200, json=sample())
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         text = supplement_models(config, START, END, client)
-    assert "数据不可用" in text and "### OpenAI 官key分组：" in text
+    assert "数据不可用" in text and "| **OpenAI 官key** |" in text
     assert "| 3137 | 39.2s | 78.5s |" in text
 
 
@@ -122,8 +123,8 @@ def test_banana_only_displays_models_with_successful_calls(monkeypatch):
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         report = supplement_models(config, START, END, client)
     assert len(seen) == 14
-    assert report == ("\n\n## 重点模型延迟｜消费日志（log_type=2）\n\n### Banana分组：\n\n"
-                      + "| 模型 | 成功次数 | P50 | P95 |\n| --- | --- | --- | --- |\n| **"
+    assert report == ("\n\n## 重点模型延迟｜消费日志（log_type=2）\n\n"
+                      + "| 分组 | 模型 | 成功次数 | P50 | P95 |\n| --- | --- | --- | --- | --- |\n| **Banana** | **"
                       + escape("gemini-3-pro-image") + "** | 3137 | 39.2s | 78.5s |")
 
 
@@ -153,6 +154,6 @@ def test_all_twenty_four_configured_targets_are_queried(monkeypatch):
         report = supplement_models(config, START, END, client)
     assert seen == [(t["group"], t["model"]) for t in targets]
     assert report.count("| 3137 | 39.2s | 78.5s |") == 24
-    assert report.count("| 模型 | 成功次数 | P50 | P95 |") == 4
+    assert report.count("| 分组 | 模型 | 成功次数 | P50 | P95 |") == 1
 
-    assert [report.index(f"### {group}分组：") for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key")] == sorted(report.index(f"### {group}分组：") for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key"))
+    assert [report.index(f"| **{group}** |") for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key")] == sorted(report.index(f"| **{group}** |") for group in ("OpenAI", "OpenAI 官key", "Banana", "Gemini官key"))

@@ -1,4 +1,11 @@
 """Portable Markdown text; the webhook sends the source unchanged."""
+import re
+
+
+def table_count(text):
+    """Count the separator rows emitted by our Markdown table renderer."""
+    return sum(bool(re.fullmatch(r"\|(?:\s*:?-{3,}:?\s*\|)+\s*", line))
+               for line in text.splitlines())
 
 
 def escape(value):

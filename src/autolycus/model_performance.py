@@ -52,9 +52,10 @@ def supplement_models(config, start, end, client=None):
                 warning = color(f"数据不可用（{type(exc).__name__}），未完成此项检查", "red", config)
                 groups.setdefault(group, []).append([f"**{escape(model)}**", warning, "—", "—"])
         lines = ["## 重点模型延迟｜消费日志（log_type=2）"]
-        for group, entries in groups.items():
-            lines.extend(["", f"### {escape(group)}分组：", "",
-                          table(["模型", "成功次数", "P50", "P95"], entries)])
+        if groups:
+            entries = [[f"**{escape(group)}**", *row]
+                       for group, rows in groups.items() for row in rows]
+            lines.extend(["", table(["分组", "模型", "成功次数", "P50", "P95"], entries)])
         if not groups:
             lines.extend(["", "已配置模型本时段均无成功消费记录，不展示延迟。"])
         return "\n\n" + "\n".join(lines)
